@@ -16,6 +16,22 @@ const MainContainer = ({ children }: PropsWithChildren) => {
   const [isDesktopView, setIsDesktopView] = useState<boolean>(
     window.innerWidth > 1024
   );
+  const [loadTechStack, setLoadTechStack] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setLoadTechStack(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    const workSection = document.getElementById("work");
+    if (workSection) observer.observe(workSection);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const resizeHandler = () => {
@@ -43,7 +59,7 @@ const MainContainer = ({ children }: PropsWithChildren) => {
             <WhatIDo />
             <Career />
             <Work />
-            {isDesktopView && (
+            {isDesktopView && loadTechStack && (
               <Suspense fallback={<div>Loading....</div>}>
                 <TechStack />
               </Suspense>
